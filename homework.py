@@ -28,10 +28,10 @@ class Calculator:
                 week += i.amount
         return week
 
-    def balance_day(self):
+    def get_remainder(self):
 
-        balance_day = self.limit - self.get_today_stats()
-        return balance_day
+        get_remainder = self.limit - self.get_today_stats()
+        return get_remainder
 
 
 class Record:
@@ -49,14 +49,21 @@ class Record:
 
 class CaloriesCalculator(Calculator):
 
+    EAT_TODAY = (
+        'Сегодня можно съесть что-нибудь ещё, но с общей '
+        'калорийностью не более {value} кКал')
+
+    STOP_EAT = ('Хватит есть!')
+
     def get_calories_remained(self):
 
-        cal_balance_day = self.balance_day()
+        cal_balance_day = self.get_remainder()
         if cal_balance_day > 0:
-            return ('Сегодня можно съесть что-нибудь ещё, но с общей '
-                    f'калорийностью не более {cal_balance_day} кКал')
+            message = (
+                self.EAT_TODAY.format(value=cal_balance_day))
         else:
-            return 'Хватит есть!'
+            message = (self.STOP_EAT)
+        return message
 
 
 class CashCalculator(Calculator):
@@ -86,14 +93,14 @@ class CashCalculator(Calculator):
             raise ValueError(self.NO_CURRENCY.format(
                 no_currency=currency))
 
-        balance_day = self.balance_day()
+        get_remainder = self.get_remainder()
 
-        if balance_day == 0:
+        if get_remainder == 0:
             return self.NO_CASH
 
         rate, currency_name = self.CURRENCIES[currency]
-        spent_by_currency = round(balance_day / rate, 2)
-        if balance_day > 0:
+        spent_by_currency = round(get_remainder / rate, 2)
+        if get_remainder > 0:
             return self.CASH_REMAINS.format(
                 spent=spent_by_currency,
                 currency_name=currency_name)
